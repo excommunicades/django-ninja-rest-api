@@ -70,3 +70,21 @@ def update_product(request, product_id: int, product_in: ProductIn):
     except Exception as e:
 
         return JsonResponse(status=400, data={"errors": f"Product did not update! {str(e)}"})
+
+
+@api.delete('/product/delete/{product_id}', response=ProductOut)
+def delete_product(request, product_id: int):
+
+    try:
+
+        product = get_object_or_404(Product, id=product_id)
+
+        product_out = ProductOut.from_orm(product)
+
+        product.delete()
+
+        return product_out
+
+    except Exception as e:
+
+        return JsonResponse(status=400, data={"errors": f"Product did not delete! {str(e)}"})
