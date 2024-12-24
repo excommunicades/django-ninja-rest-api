@@ -1,4 +1,5 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, root_validator
+from typing import Optional
 from datetime import datetime
 
 class ProductOut(BaseModel):
@@ -31,8 +32,19 @@ class ProductOut(BaseModel):
             return v.isoformat()
         return v
 
+
 class ProductIn(BaseModel):
 
-    title: str
+    title: Optional[str] = None
 
-    description: str
+    description: Optional[str] = None
+
+    @root_validator(pre=True)
+    def check_at_least_one_field(cls, values):
+        title = values.get('title')
+        description = values.get('description')
+        
+        if not title and not description:
+            raise ValueError('At least one field (title or description) must be provided.')
+        
+        return values
