@@ -1,3 +1,8 @@
 from ninja import NinjaAPI
 
-app = NinjaAPI()
+api = NinjaAPI()
+
+@api.get("/hello")
+def hello(request):
+
+    return {"message": "Hello, World!"}
