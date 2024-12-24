@@ -1,6 +1,7 @@
 from ninja import NinjaAPI
 
 from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
 
 from api.schemas import (
     ProductIn,
@@ -23,4 +24,24 @@ def get_product(request, product_id: int):
 
     product = get_object_or_404(Product, id=product_id)
 
-    return product
+    product_out = ProductOut.from_orm(product)
+
+    return product_out
+
+@api.post("/products", response=ProductOut)
+def create_product(request, product_in: ProductIn):
+
+    try:
+
+        product = Product.objects.create(
+            title=product_in.title,
+            description=product_in.description,
+        )
+
+        product_out = ProductOut.from_orm(product)
+
+        return product_out
+
+    except Exception as e:
+
+        return JsonResponse(status=400, data={"errors": f"Product did not create! {str(e)}"})
